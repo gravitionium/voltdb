@@ -281,9 +281,10 @@ if __name__ == "__main__":
             sys.exit(-1)
         print("Initialize new voltdb succeeded!!!")
         os.system("tar --exclude *.tgz -cvzf /%s/%s_initroot_%s.tgz ../" % (PV_VOLTDBROOT, my_hostname, time()))
-        os.chdir(olddir)
+        os.chdir(PV_VOLTDBROOT)
         os.system("rm -f " + ssname)
         os.system("ln -sf " + voltdbroot + " " + ssname)
+        os.chdir(olddir)
 
     # check that we have the correct/consistent PV for this node
     try:
