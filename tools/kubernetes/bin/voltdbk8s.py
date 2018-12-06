@@ -27,6 +27,7 @@ import httplib2
 import shlex
 from time import sleep, time
 from subprocess import Popen, STDOUT
+import random
 
 
 # mount point for persistent volume voltdbroot
@@ -331,6 +332,21 @@ if __name__ == "__main__":
                              " insufficient entries for host '%s'" % (oa, pod_ordinal))
                     sys.exit(-1)
                 args[ix] = li[pod_ordinal]
+
+    # test writability of voltdbroot
+    _path = os.path.join(working_voltdbroot, "testfile.pbd")
+    printdbg(_path)
+    for n in range(1000):
+        with open(_path, 'a'):
+            #printdbg(os.stat(_path))
+            pass
+        if random.random() > 0.5:
+            #printdbg("unlink...")
+            os.remove(_path)
+    try:
+        os.unlink(_path)
+    except OSError:
+        pass
 
     # build the voltdb start command line
     printdbg(args)
