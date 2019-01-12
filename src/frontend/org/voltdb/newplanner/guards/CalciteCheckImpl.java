@@ -38,7 +38,7 @@ public class CalciteCheckImpl extends CalciteCheck {
     }
 
     @Override
-    protected boolean doCheck(String sql) {
+    protected boolean doCheck(String sql, int lineNo) {
         try {
             final SqlTask task = new SqlTaskImpl(sql);
             return task.isDDL() /*|| task.isDQL()*/;    // NOTE: enabling isDQL() check is the last stand to enable all DQL planning through Calcite.
@@ -47,6 +47,7 @@ public class CalciteCheckImpl extends CalciteCheck {
                 throw new PlanningErrorException("Encountered stack overflow error. " +
                         "Try reducing the number of predicate expressions in the query.");
             } else { // For all Calcite unsupported syntax, fall back to VoltDB implementation
+                System.err.println("Wrong sql statement in " + lineNo + "th line");
                 System.err.println(truncate(e.getMessage(), 100));  // print Calcite's parse error
             }
             return false;

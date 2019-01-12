@@ -22,9 +22,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.calcite.sql.parser.SqlParseException;
-import org.voltdb.newplanner.guards.CalciteCheckImpl;
 import org.voltdb.newplanner.guards.AlwaysPassThrough;
 import org.voltdb.newplanner.guards.CalciteCheck;
+import org.voltdb.newplanner.guards.CalciteCheckImpl;
 import org.voltdb.newplanner.guards.NoLargeQuery;
 import org.voltdb.newplanner.guards.PlannerFallbackException;
 import org.voltdb.parser.SQLLexer;
@@ -89,8 +89,9 @@ public class SqlBatchImpl implements SqlBatch {
         // Are all the queries in this input batch DDL? (null means not determined yet)
         Boolean isDDLBatch = null;
         // Iterate over the SQL string list and build SqlTasks out of the SQL strings.
-        for (final String sql : sqlList) {
-            if (! s_calcitePass.check(sql)) {
+        for (int lineNo = 1; lineNo <= sqlList.size(); lineNo++) {
+            String sql = sqlList.get(lineNo);
+            if (! s_calcitePass.check(sql, lineNo)) {
                 // The query cannot pass the compatibility check, throw a fall-back exception
                 // so that VoltDB will use the old parser and planner.
                 throw new PlannerFallbackException();

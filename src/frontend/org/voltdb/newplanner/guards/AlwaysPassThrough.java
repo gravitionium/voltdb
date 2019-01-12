@@ -25,7 +25,7 @@ package org.voltdb.newplanner.guards;
 public class AlwaysPassThrough extends CalciteCheck {
 
     @Override
-    protected final boolean doCheck(String sql) {
+    protected final boolean doCheck(String sql, int lineNo) {
         return true;
     }
 

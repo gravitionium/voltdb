@@ -36,7 +36,7 @@ public abstract class CalciteCheck {
      * @param sql the SQL statement to check.
      * @return the check result.
      */
-    protected abstract boolean doCheck(String sql);
+    protected abstract boolean doCheck(String sql, int lineNo);
 
     /**
      * Indicates whether this check is a negative check.
@@ -51,11 +51,11 @@ public abstract class CalciteCheck {
      * @param sql the SQL statement to check.
      * @return true if this statement should be directed to Calcite.
      */
-    public final boolean check(String sql) {
-        boolean pass = doCheck(sql);
-        if (doCheck(sql) == isNegativeCheck()) {
+    public final boolean check(String sql, int lineNo) {
+        boolean pass = doCheck(sql, lineNo);
+        if (pass == isNegativeCheck()) {
             if (m_next != null) {
-                return m_next.check(sql);
+                return m_next.check(sql, lineNo);
             }
         }
         return pass;

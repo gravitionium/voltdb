@@ -30,7 +30,7 @@ public class NoLargeQuery extends CalciteCheck {
             VoltDB.instance().getBackendTargetType().isLargeTempTableTarget;
 
     @Override
-    protected final boolean doCheck(String sql) {
+    protected final boolean doCheck(String sql, int lineNo) {
         return ! s_isLargeTempTableTarget;
     }
 

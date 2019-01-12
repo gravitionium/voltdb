@@ -20,7 +20,7 @@ package org.voltdb.newplanner.guards;
 public class AcceptAllSelect extends CalciteCheck {
 
     @Override
-    protected final boolean doCheck(String sql) {
+    protected final boolean doCheck(String sql, int lineNo) {
         return sql.toUpperCase().startsWith("SELECT");
     }
 
