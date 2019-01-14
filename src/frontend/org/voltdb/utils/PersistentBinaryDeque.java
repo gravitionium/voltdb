@@ -256,6 +256,20 @@ public class PersistentBinaryDeque implements BinaryDeque {
     private int m_numObjects;
     private int m_numDeleted;
 
+    private static boolean checkPathCorrect(VoltLogger logger, File path) {
+        if (path != null) {
+            if (!checkPathCorrect(logger, path.getParentFile())) {
+                return false;
+            }
+            if (!path.exists() || !path.canRead() || !path.isDirectory()) {
+                logger.error(String.format("Path is not usable %s: exists=%s, directory=%s, readable=%s", path,
+                        path.exists(), path.isDirectory(), path.canRead()));
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Create a persistent binary deque with the specified nonce and storage
      * back at the specified path. Existing files will
@@ -285,9 +299,13 @@ public class PersistentBinaryDeque implements BinaryDeque {
         m_nonce = nonce;
         m_usageSpecificLog = logger;
 
-        if (!path.exists() || !path.canRead() || !path.canWrite() || !path.canExecute() || !path.isDirectory()) {
-            throw new IOException(path + " is not usable ( !exists || !readable " +
-                    "|| !writable || !executable || !directory)");
+        if (!checkPathCorrect(logger, path)) {
+            throw new IOException(path + " or one of its parents is not usable");
+        }
+
+        if (!path.canWrite() || !path.canExecute()) {
+            throw new IOException(
+                    path + " is not usable ( writable " + path.canWrite() + ", executable " + path.canExecute() + " )");
         }
 
         final TreeMap<Long, PBDSegment> segments = new TreeMap<Long, PBDSegment>();
