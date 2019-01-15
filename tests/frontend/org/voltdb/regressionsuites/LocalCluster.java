@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableSet;
+import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -2325,7 +2326,7 @@ public class LocalCluster extends VoltServerConfig {
             Map<String, String> javaProps) throws IOException {
         return createLocalCluster(schemaDDL, siteCount, hostCount, kfactor, clusterId, replicationPort,
                 remoteReplicationPort, pathToVoltDBRoot, jar, drRole, hasLocalServer, builder, null,
-                callingMethodName, enableSPIMigration, javaProps);
+                callingMethodName, enableSPIMigration, false, javaProps);
     }
 
     public static LocalCluster createLocalCluster(String schemaDDL, int siteCount, int hostCount, int kfactor,
@@ -2334,10 +2335,18 @@ public class LocalCluster extends VoltServerConfig {
                                                   DrRoleType drRole, boolean hasLocalServer, VoltProjectBuilder builder,
                                                   String callingClassName, String callingMethodName,
                                                   boolean enableSPIMigration,
+                                                  boolean enableExport,
                                                   Map<String, String> javaProps) throws IOException {
         if (builder == null) {
             builder = new VoltProjectBuilder();
         }
+        if (enableExport) {
+            Properties props = new Properties();
+            // props.put("replicated", "true");
+            props.put("skipinternals", "true");
+            builder.addExport(true /* enabled */, "custom", props);
+        }
+
         LocalCluster lc = compileBuilder(schemaDDL, siteCount, hostCount, kfactor, clusterId,
                 replicationPort, remoteReplicationPort, pathToVoltDBRoot, jar, drRole, builder, callingClassName,
                 callingMethodName);
